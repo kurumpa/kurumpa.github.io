@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hey tovarish</title>
+</head>
+<body>
+<script>
+
+  // assuming we know what year it is now
+  const currentYear = new Date().getFullYear()
+
+  // just to see that all is right
+  console.log('the year is', currentYear)
+
+  // 1) using prompt() to ask user's year of birth
+  const userBirthYearNum = parseInt(prompt('What year were you born? (YYYY)'))
+
+  // 1.1) checking user input for correct number
+  if (isNaN(userBirthYearNum)) {
+    alert('Year incorrect')
+    throw new Error('Year incorrect')
+  }
+
+  // 1.2) checkitng user input for correct year range
+  if (userBirthYearNum <= 1815 || userBirthYearNum >= 2018) {
+    alert('Does not seem legit')
+    throw new Error('Year incorrect')
+  }
+
+  // 2) calculating user's age based on the entered value and currentYear
+  let yearDiff = currentYear - userBirthYearNum
+
+  // 2.1) we need more info to know the correct age
+  const celebrated = confirm('Have you celebrated your birthday this year yet?')
+
+  if (!celebrated) {
+    yearDiff -= 1
+  }
+
+  // at this point we know user's correct age
+  const userAge = yearDiff
+
+  // 3) show the calculated age in the developer console using console.log()
+  console.log('userAge is', userAge)
+  console.log(userAge >= 18)
+  if (userAge >= 18) {
+    alert('Let\'s go drink!')
+  } else {
+    alert('You haven\'t done your homework yet!')
+  }
+
+</script>
+</body>
+</html>

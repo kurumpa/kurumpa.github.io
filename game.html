@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello world</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            /*  ¯\_(ツ)_/¯  */
+            overflow: hidden;
+        }
+        body {
+            display: flex;
+            flex-direction: row;
+        }
+        #code {
+            width: 50%;
+        }
+        #gameCanvasWrapper {
+            position: relative;
+            flex: 1 1 10px;
+            /*border: 1px dashed gray;*/
+            overflow: auto;
+        }
+        .col {
+            position: absolute;
+        }
+        .cell {
+            position: absolute;
+            border: 1px solid #f9f9f9;
+            transition: all linear 0.3s;
+        }
+        .player {
+            background-image: url(cat-go.png);
+            background-size: contain;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="code">
+</div>
+<div id="gameCanvasWrapper">
+    <div id="gameCanvas" :style="{width: rows * cellSize + 'px', height: cols * cellSize + 'px'}">
+        <div class="col" :style="{left: (x * cellSize) + 'px', top: 0, width: cellSize + 'px', height: cols * cellSize + 'px'}" :key="`col_${x}`" v-for="(col, x) in state">
+            <div
+                    :key="`col_${x}_row_${y}`"
+                    class="cell"
+                    v-for="(cell, y) in col"
+                    :title="`X: ${x}, Y: ${y}`"
+                    :style="{
+                  'background-color': cell.background,
+                  width: cellSize + 'px',
+                  height: cellSize + 'px',
+                  top: (y * cellSize) + 'px',
+                  left: 0
+                }"
+            >
+                <div class="player" v-if="cell.contents.includes('player')"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="node_modules/vue/dist/vue.min.js"></script>
+<script src="node_modules/lodash/lodash.min.js"></script>
+<script>var require = { paths: { 'vs': 'node_modules/monaco-editor/min/vs' } }</script>
+<script src="node_modules/monaco-editor/min/vs/loader.js"></script>
+<script src="node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+<script src="node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

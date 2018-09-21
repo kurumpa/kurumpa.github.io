@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello JS</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            position: relative;
+            background: center center no-repeat;
+        }
+        .credits {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            color: #696969;
+            font: 12px Arial, Helvetica, sans-serif;
+            padding: 1em;
+        }
+        .credits a {
+            color: #808080;
+        }
+    </style>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+</head>
+<body>
+<div class="credits">Cute illustrations by <a href="https://iconka.com/">Denis Sazhin</a></div>
+<script>
+  const availableIconNames = [
+    'acrobat', 'banjo', 'burp', 'drink',
+    'facepalm', 'fly', 'gift', 'groom',
+    'kittens', 'knead', 'love', 'meal',
+    'popcorn', 'purr', 'sleepy', 'walk'
+  ]
+  document.body.style.backgroundImage = 'url(img/' +
+    availableIconNames[Math.floor(Math.random() * availableIconNames.length)] +
+    '.gif)'
+</script>
+</body>
+</html>
