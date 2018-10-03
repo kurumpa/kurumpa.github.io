@@ -1,0 +1,28 @@
+<script>
+  'use strict'
+  var userName = prompt ("Hi! Tell me your name please.")
+
+  // user pressed cancel
+  if (userName === null){
+
+    alert ("You're shy :(")
+  } else {
+
+   var userNameRepeat
+    // если проверку на нулл переместить ниже проверки на длину, то она не будет срабатывать. это связано с userName.length ниже, не ясно почему так. спрсить!
+    if (typeof userName === "string" && userName.length > 0) {
+      alert("Wellcome, " + userName)
+      userNameRepeat = prompt("I frogot your name. Repeat it please.")
+      if (userName === userNameRepeat) {
+        alert("Sure, " + userName)
+      } else {
+        alert("But where is " + userName + "?")
+      }
+    } else {
+      alert("There are no letters in your name. That's weird. o_O")
+    }
+
+  }
+</script>
+
+
