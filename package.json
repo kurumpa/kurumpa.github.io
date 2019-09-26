@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "monaco-editor": "^0.14.3",
-    "vue": "^2.5.17"
+    "vue": "^2.6.10"
   }
 }
