@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        html, body, #wrapper {
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+        }
+        #out {
+            height: 100%;
+            top: 0;
+            left: 0;
+            position: absolute;
+
+            width: 30cm;
+
+            background-image: url("./abstract-background-rounded-shapes-colorful-abstraktsiia-tek.jpg");
+        }
+        .hidden {
+            /*opacity: 0;*/
+        }
+
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <div id="out" class="fwd"></div>
+</div>
+<script>
+  const add = (a, b) => a + b
+  const sum = arr => arr.reduce(add, 0)
+  const avg = arr => sum(arr) / arr.length
+  function debounce(f, ms) {
+    let isCooldown = false
+    return function() {
+      if (isCooldown) return
+      f.apply(this, arguments)
+      isCooldown = true
+      setTimeout(() => isCooldown = false, ms)
+    }
+  }
+
+  const lastReadings = new Array(3).fill(0)
+
+
+  let laSensor = new LinearAccelerationSensor({frequency: 60});
+
+  let prevTs = performance.now()
+  let dts = 0
+
+  let maxA = -Infinity
+  let lastSignSwitch
+  let lastForward
+
+  const t = document.getElementById('out')
+
+  let cycleStartedAt
+  let lastCycleTime = 0
+  // const lapDebounced = debounce(() => {
+  //   const now = performance.now()
+  //   if (!cycleStartedAt) {
+  //     cycleStartedAt = now
+  //     return
+  //   }
+  //   lastCycleTime = now - cycleStartedAt
+  //   //console.log('lap time', lastCycleTime)
+  //   cycleStartedAt = now
+  // }, 20)
+
+  laSensor.addEventListener('reading', e => {
+    //t.innerHTML = `x: ${laSensor.x};<br/>y: ${laSensor.y};<br/>z: ${laSensor.z}`
+    let { x, y, z } = laSensor
+    const ts = performance.now()
+    dts = ts - prevTs
+    prevTs = ts
+
+    lastReadings.push(x)
+    lastReadings.shift()
+    x = avg(lastReadings)
+
+
+    const forward = x > 0
+    if (forward !== lastForward) {
+
+      const now = performance.now()
+      if (!cycleStartedAt) {
+        cycleStartedAt = now
+        return
+      }
+      lastCycleTime = now - cycleStartedAt
+      cycleStartedAt = now
+      lastForward = forward
+
+      if (lastCycleTime > 150) {
+        sw(lastCycleTime, forward)
+      }
+    }
+
+    // const a = Math.abs(x)
+    // if (a > maxA) {
+    //   maxA = a
+    // }
+    //
+    // // approaching max acceleration
+    // if ((maxA - a) < 0.1) {
+    //   lapDebounced()
+    // }
+
+  })
+  laSensor.start()
+
+  const moveAndChangeColor = [
+    {
+      transform: 'translateX(0)',
+      left: 0
+    },
+    {
+      transform: 'translateX(-100%)',
+      left: '100%'
+    },
+  ];
+
+  const aaa = t.animate(moveAndChangeColor, {
+    duration: 300,
+    easing: 'ease-in',
+    fill: 'both'
+  })
+  aaa.pause()
+
+  function sw (targetMs, forward) {
+    aaa.cancel()
+    const rate = 300 / targetMs
+    if (forward) {
+      aaa.currentTime = 0
+      aaa.playbackRate = rate
+      aaa.play()
+    } else {
+      aaa.currentTime = targetMs
+      aaa.playbackRate = -rate
+      aaa.play()
+    }
+  }
+
+  // aaa.onfinish = () => aaa.reverse()
+
+  function draw(timestamp) {
+    t.classList.toggle('hidden')
+    window.requestAnimationFrame(draw)
+  }
+  window.requestAnimationFrame(draw)
+</script>
+</body>
+</html>
