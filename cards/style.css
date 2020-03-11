@@ -1,0 +1,58 @@
+h1, h2 {
+    font-family: Lato;
+  }
+
+  .card {
+    width: 345.5px;
+    height: 528px;
+    position: absolute;
+    transition: .6s linear;
+    top: 50px;
+  }
+  .stack-0 {
+    left: 50px;
+  }
+
+  .stack-1 {
+    left: 495px;
+  }
+  
+  .card .front, .card .back {
+    position: absolute;
+    top:0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    transition: .3s linear;
+    background-size: contain;
+  }
+  
+  .face-0 .back, .face-1 .front {
+    transition-delay: .3s;
+    transform: rotateY(0);
+  }
+  .face-0 .front, .face-1 .back  {
+    transform: rotateY(90deg);
+  }
+  
+  
+  
+  .front {
+    content: "hello";
+    position: absolute;
+    top: 200px;
+    left: 100px;
+  }
+  .back {
+  
+    background-image: url("PNG/red_back.png");
+    
+
+    /* 
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0) 49.9%, red 49.9%, red 60%, rgba(0, 0, 0, 0) 60% ), linear-gradient(45deg, red 10%, rgba(0, 0, 0, 0) 10% );
+    background-size: 0.5em 0.5em 
+    */
+  
+  }
+  
+  
