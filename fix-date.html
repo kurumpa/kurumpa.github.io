@@ -1,0 +1,33 @@
+<html>
+  
+  <body>
+  <textarea id="input"></textarea><br/><button onclick="fix()">Date format fix</button><br/><textarea id="output"></textarea>
+    <script>
+    window.fix = function fix() {
+  try {
+    const txt = document.getElementById("input");
+    const txt2 = document.getElementById("output");
+    const str = /data="(.+)"/.exec(txt.value);
+    const d = JSON.parse(JSON.parse(`"${str[1]}"`));
+
+    d.forEach(dd =>
+      dd.query.layers.forEach(l =>
+        l.columnSettings.forEach(s => {
+          if (s.name.includes("date") || s.name.includes("Date")) {
+            s.format = "MM/dd/yyyy";
+          }
+        })
+      )
+    );
+
+    txt2.value = txt.value.replace(
+      /data="(.+)"/,
+      `data=${JSON.stringify(JSON.stringify(d))}`
+    );
+  } catch (e) {
+    console.error(e);
+  }
+};
+    </script>
+  </body>
+</html>
