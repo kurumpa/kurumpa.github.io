@@ -1,460 +1,627 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>DST Calendar</title>
-<style>
-  :root {
-    --row: 44px;
-    --bar: 42px;
-    --bg: #1b1712;
-    --fg: #f2e6d0;
-    --line: rgba(255,255,255,.10);
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0;
-    height: 100%;
-    background: #0e0c0a;
-    color: var(--fg);
-    font: 14px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
-  body { display: flex; justify-content: center; }
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <title>DST Calendar</title>
+        <style>
+            :root {
+                --row: 44px;
+                --bar: 42px;
+                --bg: #1b1712;
+                --fg: #f2e6d0;
+                --line: rgba(255, 255, 255, 0.1);
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+                height: 100%;
+                background: #0e0c0a;
+                color: var(--fg);
+                font:
+                    14px/1.2 ui-monospace,
+                    SFMono-Regular,
+                    Menlo,
+                    monospace;
+                overflow: hidden;
+                overscroll-behavior: none;
+            }
+            body {
+                display: flex;
+                justify-content: center;
+            }
 
-  #app {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 400px;
-    height: 100%;
-    height: 100dvh;
-    background: var(--bg);
-    box-shadow: 0 0 0 1px #000, 0 0 40px #000 inset;
-  }
+            #app {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                max-width: 400px;
+                height: 100%;
+                height: 100dvh;
+                background: var(--bg);
+                box-shadow:
+                    0 0 0 1px #000,
+                    0 0 40px #000 inset;
+            }
 
-  /* ---- menu bar ---- */
-  #bar {
-    flex: 0 0 var(--bar);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0 8px;
-    background: #241e17;
-    border-bottom: 1px solid var(--line);
-    z-index: 3;
-  }
-  #bar label { font-size: 11px; opacity: .55; letter-spacing: .04em; }
-  input[type=number] {
-    width: 100%;
-    min-width: 0;
-    padding: 5px 6px;
-    background: #14110d;
-    color: var(--fg);
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    font: inherit;
-    font-size: 16px;
-  }
-  input[type=number]:focus { outline: none; border-color: #e08a3c; }
-  input[type=number]::-webkit-outer-spin-button,
-  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  input[type=number] { -moz-appearance: textfield; }
+            /* ---- menu bar ---- */
+            #bar {
+                flex: 0 0 var(--bar);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 0 10px;
+                background: #241e17;
+                border-bottom: 1px solid var(--line);
+                z-index: 3;
+            }
+            #bar label {
+                font-size: 11px;
+                opacity: 0.55;
+                letter-spacing: 0.04em;
+            }
+            input[type="number"] {
+                width: 100%;
+                min-width: 0;
+                padding: 5px 6px;
+                background: #14110d;
+                color: var(--fg);
+                border: 1px solid var(--line);
+                border-radius: 4px;
+                font: inherit;
+                font-size: 16px;
+            }
+            input[type="number"]:focus {
+                outline: none;
+                border-color: #e08a3c;
+            }
+            input[type="number"]::-webkit-outer-spin-button,
+            input[type="number"]::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            input[type="number"] {
+                -moz-appearance: textfield;
+            }
 
-  #jump-form { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
-  #jump { flex: 1; }
+            #jump-form {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex: 1;
+                min-width: 0;
+            }
+            #jump {
+                flex: 1;
+            }
 
-  .btn {
-    flex: 0 0 auto;
-    padding: 5px 9px;
-    background: #14110d;
-    color: var(--fg);
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    font: inherit;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .btn:hover { border-color: #e08a3c; }
-  .btn[aria-expanded="true"] { background: #e08a3c; color: #1b1712; border-color: #e08a3c; }
+            .btn {
+                flex: 0 0 auto;
+                padding: 8px 12px;
+                background: #14110d;
+                color: var(--fg);
+                border: 1px solid var(--line);
+                border-radius: 4px;
+                font: inherit;
+                font-size: 13px;
+                cursor: pointer;
+            }
+            .btn:hover {
+                border-color: #e08a3c;
+            }
+            .btn[aria-expanded="true"] {
+                background: #e08a3c;
+                color: #1b1712;
+                border-color: #e08a3c;
+            }
 
-  /* ---- settings menu ---- */
-  #menu {
-    position: absolute;
-    top: var(--bar);
-    left: 0;
-    right: 0;
-    z-index: 2;
-    padding: 12px 10px;
-    background: #241e17;
-    border-bottom: 1px solid var(--line);
-    box-shadow: 0 12px 24px rgba(0,0,0,.55);
-  }
-  #menu[hidden] { display: none; }
-  .field { margin-bottom: 12px; }
-  .field:last-of-type { margin-bottom: 8px; }
-  .field > label { display: block; margin-bottom: 4px; font-size: 12px; opacity: .8; }
-  .field .hint { margin-top: 4px; font-size: 10px; line-height: 1.35; opacity: .45; }
-  .stepper { display: flex; gap: 4px; align-items: center; }
-  .stepper .btn { padding: 5px 8px; }
-  #menu-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  #current { font-size: 10px; opacity: .45; }
+            /* ---- settings menu ---- */
+            #menu {
+                position: absolute;
+                top: var(--bar);
+                left: 0;
+                right: 0;
+                z-index: 2;
+                padding: 12px 10px;
+                background: #241e17;
+                border-bottom: 1px solid var(--line);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.55);
+            }
+            #menu[hidden] {
+                display: none;
+            }
+            .field {
+                margin-bottom: 12px;
+            }
+            .field:last-of-type {
+                margin-bottom: 8px;
+            }
+            .field > label {
+                display: block;
+                margin-bottom: 4px;
+                font-size: 12px;
+                opacity: 0.8;
+            }
+            .field .hint {
+                margin-top: 4px;
+                font-size: 10px;
+                line-height: 1.35;
+                opacity: 0.45;
+            }
+            .stepper {
+                display: flex;
+                gap: 4px;
+                align-items: center;
+            }
+            .stepper .btn {
+                padding: 5px 8px;
+            }
+            #menu-actions {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 8px;
+            }
+            #current {
+                font-size: 10px;
+                opacity: 0.45;
+            }
 
-  /* ---- list ---- */
-  #calendar {
-    position: relative;
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: hidden;            /* no scrollbar - we move rows ourselves */
-    touch-action: none;
-    cursor: grab;
-    user-select: none;
-  }
-  #calendar.dragging { cursor: grabbing; }
+            /* ---- list ---- */
+            #calendar {
+                position: relative;
+                flex: 1 1 auto;
+                min-height: 0;
+                overflow: hidden; /* no scrollbar - we move rows ourselves */
+                touch-action: none;
+                cursor: grab;
+                user-select: none;
+            }
+            #calendar.dragging {
+                cursor: grabbing;
+            }
 
-  .row {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: var(--row);
-    display: grid;
-    grid-template-columns: minmax(56px, auto) 1fr 28px;
-    align-items: center;
-    gap: 8px;
-    padding: 0 10px;
-    border-bottom: 1px solid rgba(255,255,255,.06);
-    will-change: transform;
-  }
-  .day { font-weight: 700; opacity: .85; white-space: nowrap; }
-  .meta { display: flex; flex-direction: column; gap: 2px; }
-  .season { font-size: 13px; font-weight: 600; }
-  .phase { font-size: 11px; opacity: .6; }
-  .moon { font-size: 18px; text-align: right; }
+            .row {
+                position: absolute;
+                left: 0;
+                right: 0;
+                height: var(--row);
+                display: grid;
+                grid-template-columns: minmax(56px, auto) 1fr 28px;
+                align-items: center;
+                gap: 10px;
+                padding: 0 10px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                will-change: transform;
+            }
+            .day {
+                font-weight: 700;
+                opacity: 0.85;
+                white-space: nowrap;
+            }
+            .meta {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+            .season {
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .phase {
+                font-size: 11px;
+                opacity: 0.6;
+            }
+            .moon {
+                font-size: 18px;
+                text-align: right;
+            }
 
-  .s-autumn { background: linear-gradient(90deg, rgba(196,114,38,.20), transparent); }
-  .s-winter { background: linear-gradient(90deg, rgba(120,180,220,.20), transparent); }
-  .s-spring { background: linear-gradient(90deg, rgba(110,180,110,.20), transparent); }
-  .s-summer { background: linear-gradient(90deg, rgba(220,180,60,.20), transparent); }
+            .s-autumn {
+                background: linear-gradient(90deg, rgba(196, 114, 38, 0.2), transparent);
+            }
+            .s-winter {
+                background: linear-gradient(90deg, rgba(120, 180, 220, 0.2), transparent);
+            }
+            .s-spring {
+                background: linear-gradient(90deg, rgba(110, 180, 110, 0.2), transparent);
+            }
+            .s-summer {
+                background: linear-gradient(90deg, rgba(220, 180, 60, 0.2), transparent);
+            }
 
-  .s-autumn .season { color: #e08a3c; }
-  .s-winter .season { color: #8fc6e8; }
-  .s-spring .season { color: #7fc97f; }
-  .s-summer .season { color: #f0cf5a; }
+            .s-autumn .season {
+                color: #e08a3c;
+            }
+            .s-winter .season {
+                color: #8fc6e8;
+            }
+            .s-spring .season {
+                color: #7fc97f;
+            }
+            .s-summer .season {
+                color: #f0cf5a;
+            }
 
-  .full .moon { text-shadow: 0 0 10px #fff8c0; }
-  .newmoon .day { opacity: .5; }
+            .full .moon {
+                text-shadow: 0 0 10px #fff8c0;
+            }
+            .newmoon .day {
+                opacity: 0.5;
+            }
 
-  .row.year-start { border-top: 1px solid rgba(255,255,255,.25); }
-  .row.marked { box-shadow: inset 3px 0 0 #e08a3c; }
-  .year-tag {
-    position: absolute;
-    top: 2px; right: 44px;
-    font-size: 9px; letter-spacing: .08em;
-    opacity: .45; text-transform: uppercase;
-  }
-</style>
-</head>
-<body>
-<div id="app">
-  <div id="bar">
-    <form id="jump-form" autocomplete="off">
-      <label for="jump">Day</label>
-      <input id="jump" type="number" step="1" min="1" placeholder="jump to&hellip;">
-      <button class="btn" type="submit" title="Jump to day">&#8629;</button>
-    </form>
-    <button class="btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu" title="Settings">&#9776;</button>
-  </div>
+            .row.year-start {
+                border-top: 1px solid rgba(255, 255, 255, 0.25);
+            }
+            .row.marked {
+                box-shadow: inset 3px 0 0 #e08a3c;
+            }
+            .year-tag {
+                position: absolute;
+                top: 2px;
+                right: 44px;
+                font-size: 9px;
+                letter-spacing: 0.08em;
+                opacity: 0.45;
+                text-transform: uppercase;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <div id="bar">
+                <form id="jump-form" autocomplete="off">
+                    <label for="jump">Day</label>
+                    <input id="jump" type="number" step="1" min="1" placeholder="jump to&hellip;" />
+                    <button class="btn" type="submit" title="Jump to day">&#8629;</button>
+                </form>
+                <button
+                    class="btn"
+                    id="menu-btn"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="menu"
+                    title="Settings"
+                >
+                    &#9776;
+                </button>
+            </div>
 
-  <div id="menu" hidden>
-    <div class="field">
-      <label for="new-moon">New Moon day (moon cycle shift)</label>
-      <div class="stepper">
-        <button class="btn" type="button" data-step="new-moon" data-delta="-1">&minus;</button>
-        <input id="new-moon" type="number" step="1">
-        <button class="btn" type="button" data-step="new-moon" data-delta="1">+</button>
-      </div>
-      <div class="hint">World day that is a New Moon. Beating the Celestial Champion or
-        using Wickerbottom&#39;s Lunar Grimoire resets the cycle &mdash; put the new day here.</div>
-    </div>
+            <div id="menu" hidden>
+                <div class="field">
+                    <label for="new-moon">New Moon day (moon cycle shift)</label>
+                    <div class="stepper">
+                        <button class="btn" type="button" data-step="new-moon" data-delta="-1">&minus;</button>
+                        <input id="new-moon" type="number" step="1" />
+                        <button class="btn" type="button" data-step="new-moon" data-delta="1">+</button>
+                    </div>
+                    <div class="hint">
+                        World day that is a New Moon. Beating the Celestial Champion or using Wickerbottom&#39;s Lunar
+                        Grimoire resets the cycle &mdash; put the new day here.
+                    </div>
+                </div>
 
-    <div class="field">
-      <label for="season-start">Autumn&nbsp;1 day (day shift)</label>
-      <div class="stepper">
-        <button class="btn" type="button" data-step="season-start" data-delta="-1">&minus;</button>
-        <input id="season-start" type="number" step="1">
-        <button class="btn" type="button" data-step="season-start" data-delta="1">+</button>
-      </div>
-      <div class="hint">World day the 70-day year starts on. Shift this if your world
-        did not begin on Autumn&nbsp;1.</div>
-    </div>
+                <div class="field">
+                    <label for="season-start">Autumn&nbsp;1 day (day shift)</label>
+                    <div class="stepper">
+                        <button class="btn" type="button" data-step="season-start" data-delta="-1">&minus;</button>
+                        <input id="season-start" type="number" step="1" />
+                        <button class="btn" type="button" data-step="season-start" data-delta="1">+</button>
+                    </div>
+                    <div class="hint">
+                        World day the 70-day year starts on. Shift this if your world did not begin on Autumn&nbsp;1.
+                    </div>
+                </div>
 
-    <div id="menu-actions">
-      <span id="current"></span>
-      <button class="btn" type="button" id="reset">Reset</button>
-    </div>
-  </div>
+                <div id="menu-actions">
+                    <span id="current"></span>
+                    <button class="btn" type="button" id="reset">Reset</button>
+                </div>
+            </div>
 
-  <div id="calendar" tabindex="0"></div>
-</div>
+            <div id="calendar" tabindex="0"></div>
+        </div>
 
-<script>
-// ---- DST model -------------------------------------------------------------
-const SEASONS = [
-  { name: 'Autumn', len: 20, cls: 's-autumn' },
-  { name: 'Winter', len: 15, cls: 's-winter' },
-  { name: 'Spring', len: 20, cls: 's-spring' },
-  { name: 'Summer', len: 15, cls: 's-summer' },
-];
-const YEAR = SEASONS.reduce((a, s) => a + s.len, 0); // 70 days
+        <script>
+            // ---- DST model -------------------------------------------------------------
+            const SEASONS = [
+                { name: "Autumn", len: 20, cls: "s-autumn" },
+                { name: "Winter", len: 15, cls: "s-winter" },
+                { name: "Spring", len: 20, cls: "s-spring" },
+                { name: "Summer", len: 15, cls: "s-summer" },
+            ];
+            const YEAR = SEASONS.reduce((a, s) => a + s.len, 0); // 70 days
 
-// 20-day lunar cycle. Per the DST calendar's lookup table, New and Full each last
-// a single day; every crescent/half/gibbous phase lasts three days (the waning
-// crescent wraps: cycle days 18, 19, 0). Day-of-cycle 1 is the New Moon.
-const PHASES = [
-  { name: 'New Moon',        glyph: '\u{1F311}', cls: 'newmoon' },
-  { name: 'Waxing Crescent', glyph: '\u{1F312}', cls: '' },
-  { name: 'Half Moon',       glyph: '\u{1F313}', cls: '' },
-  { name: 'Waxing Gibbous',  glyph: '\u{1F314}', cls: '' },
-  { name: 'Full Moon',       glyph: '\u{1F315}', cls: 'full' },
-  { name: 'Waning Gibbous',  glyph: '\u{1F316}', cls: '' },
-  { name: 'Half Moon',       glyph: '\u{1F317}', cls: '' },
-  { name: 'Waning Crescent', glyph: '\u{1F318}', cls: '' },
-];
-// index into PHASES for each day of the 20-day cycle (0..19)
-const MOON_CYCLE = [7, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 5, 5, 6, 6, 6, 7, 7];
+            // 20-day lunar cycle. Per the DST calendar's lookup table, New and Full each last
+            // a single day; every crescent/half/gibbous phase lasts three days (the waning
+            // crescent wraps: cycle days 18, 19, 0). Day-of-cycle 1 is the New Moon.
+            const PHASES = [
+                { name: "New Moon", glyph: "\u{1F311}", cls: "newmoon" },
+                { name: "Waxing Crescent", glyph: "\u{1F312}", cls: "" },
+                { name: "Half Moon", glyph: "\u{1F313}", cls: "" },
+                { name: "Waxing Gibbous", glyph: "\u{1F314}", cls: "" },
+                { name: "Full Moon", glyph: "\u{1F315}", cls: "full" },
+                { name: "Waning Gibbous", glyph: "\u{1F316}", cls: "" },
+                { name: "Half Moon", glyph: "\u{1F317}", cls: "" },
+                { name: "Waning Crescent", glyph: "\u{1F318}", cls: "" },
+            ];
+            // index into PHASES for each day of the 20-day cycle (0..19)
+            const MOON_CYCLE = [7, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 5, 5, 6, 6, 6, 7, 7];
 
-const DEFAULTS = { newMoonDay: 1, seasonStart: 1 };
-const cfg = { ...DEFAULTS, ...load() };
+            const DEFAULTS = { newMoonDay: 1, seasonStart: 1 };
+            const cfg = { ...DEFAULTS, ...load() };
 
-function load() {
-  try { return JSON.parse(localStorage.getItem('dst-calendar') || '{}'); }
-  catch (_) { return {}; }
-}
-function save() {
-  try { localStorage.setItem('dst-calendar', JSON.stringify(cfg)); } catch (_) {}
-}
+            function load() {
+                try {
+                    return JSON.parse(localStorage.getItem("dst-calendar") || "{}");
+                } catch (_) {
+                    return {};
+                }
+            }
+            function save() {
+                try {
+                    localStorage.setItem("dst-calendar", JSON.stringify(cfg));
+                } catch (_) {}
+            }
 
-const mod = (n, m) => ((n % m) + m) % m;
+            const mod = (n, m) => ((n % m) + m) % m;
 
-function seasonOf(day) {
-  let d = mod(day - cfg.seasonStart, YEAR);
-  for (const s of SEASONS) {
-    if (d < s.len) return { season: s, dayInSeason: d + 1 };
-    d -= s.len;
-  }
-}
-function phaseOf(day) {
-  return PHASES[MOON_CYCLE[mod(day - cfg.newMoonDay + 1, MOON_CYCLE.length)]];
-}
-function dayInfo(day) {
-  const { season, dayInSeason } = seasonOf(day);
-  return {
-    day,
-    year: Math.floor((day - cfg.seasonStart) / YEAR) + 1,
-    season: season.name,
-    seasonClass: season.cls,
-    dayInSeason,
-    seasonLength: season.len,
-    phase: phaseOf(day),
-  };
-}
+            function seasonOf(day) {
+                let d = mod(day - cfg.seasonStart, YEAR);
+                for (const s of SEASONS) {
+                    if (d < s.len) return { season: s, dayInSeason: d + 1 };
+                    d -= s.len;
+                }
+            }
+            function phaseOf(day) {
+                return PHASES[MOON_CYCLE[mod(day - cfg.newMoonDay + 1, MOON_CYCLE.length)]];
+            }
+            function dayInfo(day) {
+                const { season, dayInSeason } = seasonOf(day);
+                return {
+                    day,
+                    year: Math.floor((day - cfg.seasonStart) / YEAR) + 1,
+                    season: season.name,
+                    seasonClass: season.cls,
+                    dayInSeason,
+                    seasonLength: season.len,
+                    phase: phaseOf(day),
+                };
+            }
 
-// ---- infinite virtual list -------------------------------------------------
-const ROW = 44;
-const MIN_DAY = 1;                 // top of the world; scroll down is unbounded
-const el = document.getElementById('calendar');
+            // ---- infinite virtual list -------------------------------------------------
+            const ROW = 44;
+            const MIN_DAY = 1; // top of the world; scroll down is unbounded
+            const el = document.getElementById("calendar");
 
-let offset = 0;                    // px scrolled from day 1
-let marked = null;                 // day highlighted by the last jump
-let pool = [];                     // recycled row elements
-let raf = null;
+            let offset = 0; // px scrolled from day 1
+            let marked = null; // day highlighted by the last jump
+            let pool = []; // recycled row elements
+            let raf = null;
 
-function buildPool() {
-  const need = Math.ceil(el.clientHeight / ROW) + 2;
-  while (pool.length < need) {
-    const row = document.createElement('div');
-    row.className = 'row';
-    row.innerHTML =
-      '<div class="day"></div>' +
-      '<div class="meta"><div class="season"></div><div class="phase"></div></div>' +
-      '<div class="moon"></div>' +
-      '<div class="year-tag"></div>';
-    row.refs = {
-      day: row.querySelector('.day'),
-      season: row.querySelector('.season'),
-      phase: row.querySelector('.phase'),
-      moon: row.querySelector('.moon'),
-      year: row.querySelector('.year-tag'),
-    };
-    el.appendChild(row);
-    pool.push(row);
-  }
-  while (pool.length > need) el.removeChild(pool.pop());
-}
+            function buildPool() {
+                const need = Math.ceil(el.clientHeight / ROW) + 2;
+                while (pool.length < need) {
+                    const row = document.createElement("div");
+                    row.className = "row";
+                    row.innerHTML =
+                        '<div class="day"></div>' +
+                        '<div class="meta"><div class="season"></div><div class="phase"></div></div>' +
+                        '<div class="moon"></div>' +
+                        '<div class="year-tag"></div>';
+                    row.refs = {
+                        day: row.querySelector(".day"),
+                        season: row.querySelector(".season"),
+                        phase: row.querySelector(".phase"),
+                        moon: row.querySelector(".moon"),
+                        year: row.querySelector(".year-tag"),
+                    };
+                    el.appendChild(row);
+                    pool.push(row);
+                }
+                while (pool.length > need) el.removeChild(pool.pop());
+            }
 
-function render() {
-  raf = null;
-  const first = Math.floor(offset / ROW);      // index of first visible row
-  const shift = offset - first * ROW;
+            function render() {
+                raf = null;
+                const first = Math.floor(offset / ROW); // index of first visible row
+                const shift = offset - first * ROW;
 
-  pool.forEach((row, i) => {
-    const day = MIN_DAY + first + i;
-    const info = dayInfo(day);
-    const yearStart = info.dayInSeason === 1 && info.season === 'Autumn';
-    row.style.transform = `translateY(${i * ROW - shift}px)`;
-    row.className = 'row ' + info.seasonClass +
-                    (info.phase.cls ? ' ' + info.phase.cls : '') +
-                    (yearStart ? ' year-start' : '') +
-                    (day === marked ? ' marked' : '');
-    row.refs.day.textContent = 'Day ' + info.day;
-    row.refs.season.textContent = `${info.season} ${info.dayInSeason}/${info.seasonLength}`;
-    row.refs.phase.textContent = info.phase.name;
-    row.refs.moon.textContent = info.phase.glyph;
-    row.refs.year.textContent = yearStart ? 'Year ' + info.year : '';
-  });
-}
+                pool.forEach((row, i) => {
+                    const day = MIN_DAY + first + i;
+                    const info = dayInfo(day);
+                    const yearStart = info.dayInSeason === 1 && info.season === "Autumn";
+                    row.style.transform = `translateY(${i * ROW - shift}px)`;
+                    row.className =
+                        "row " +
+                        info.seasonClass +
+                        (info.phase.cls ? " " + info.phase.cls : "") +
+                        (yearStart ? " year-start" : "") +
+                        (day === marked ? " marked" : "");
+                    row.refs.day.textContent = "Day " + info.day;
+                    row.refs.season.textContent = `${info.season} ${info.dayInSeason}/${info.seasonLength}`;
+                    row.refs.phase.textContent = info.phase.name;
+                    row.refs.moon.textContent = info.phase.glyph;
+                    row.refs.year.textContent = yearStart ? "Year " + info.year : "";
+                });
+            }
 
-function scheduleRender() {
-  if (raf === null) raf = requestAnimationFrame(render);
-}
-function scrollBy(dy) {
-  offset = Math.max(0, offset + dy);
-  scheduleRender();
-}
-function goToDay(day, { mark = true } = {}) {
-  const d = Math.max(MIN_DAY, Math.round(day));
-  offset = (d - MIN_DAY) * ROW;
-  if (mark) marked = d;
-  scheduleRender();
-  return d;
-}
+            function scheduleRender() {
+                if (raf === null) raf = requestAnimationFrame(render);
+            }
+            function scrollBy(dy) {
+                offset = Math.max(0, offset + dy);
+                scheduleRender();
+            }
+            function goToDay(day, { mark = true } = {}) {
+                const d = Math.max(MIN_DAY, Math.round(day));
+                offset = (d - MIN_DAY) * ROW;
+                if (mark) marked = d;
+                scheduleRender();
+                return d;
+            }
 
-// wheel / trackpad
-el.addEventListener('wheel', (e) => {
-  e.preventDefault();
-  let dy = e.deltaY;
-  if (e.deltaMode === 1) dy *= ROW;              // lines
-  else if (e.deltaMode === 2) dy *= el.clientHeight; // pages
-  scrollBy(dy);
-}, { passive: false });
+            // wheel / trackpad
+            el.addEventListener(
+                "wheel",
+                (e) => {
+                    e.preventDefault();
+                    let dy = e.deltaY;
+                    if (e.deltaMode === 1)
+                        dy *= ROW; // lines
+                    else if (e.deltaMode === 2) dy *= el.clientHeight; // pages
+                    scrollBy(dy);
+                },
+                { passive: false },
+            );
 
-// pointer drag + inertia (touch and mouse)
-let dragging = false, lastY = 0, lastT = 0, velocity = 0, inertia = null;
+            // pointer drag + inertia (touch and mouse)
+            let dragging = false,
+                lastY = 0,
+                lastT = 0,
+                velocity = 0,
+                inertia = null;
 
-el.addEventListener('pointerdown', (e) => {
-  dragging = true;
-  lastY = e.clientY;
-  lastT = performance.now();
-  velocity = 0;
-  cancelAnimationFrame(inertia);
-  el.setPointerCapture(e.pointerId);
-  el.classList.add('dragging');
-});
-el.addEventListener('pointermove', (e) => {
-  if (!dragging) return;
-  const now = performance.now();
-  const dy = e.clientY - lastY;
-  const dt = now - lastT || 16;
-  velocity = -dy / dt * 16;                      // px per frame
-  lastY = e.clientY;
-  lastT = now;
-  scrollBy(-dy);
-});
-function endDrag(e) {
-  if (!dragging) return;
-  dragging = false;
-  el.classList.remove('dragging');
-  if (e && e.pointerId !== undefined) { try { el.releasePointerCapture(e.pointerId); } catch (_) {} }
-  const step = () => {
-    velocity *= 0.94;
-    if (Math.abs(velocity) < 0.2) return;
-    const before = offset;
-    scrollBy(velocity);
-    if (offset === before) return;               // hit the top
-    inertia = requestAnimationFrame(step);
-  };
-  inertia = requestAnimationFrame(step);
-}
-el.addEventListener('pointerup', endDrag);
-el.addEventListener('pointercancel', endDrag);
+            el.addEventListener("pointerdown", (e) => {
+                dragging = true;
+                lastY = e.clientY;
+                lastT = performance.now();
+                velocity = 0;
+                cancelAnimationFrame(inertia);
+                el.setPointerCapture(e.pointerId);
+                el.classList.add("dragging");
+            });
+            el.addEventListener("pointermove", (e) => {
+                if (!dragging) return;
+                const now = performance.now();
+                const dy = e.clientY - lastY;
+                const dt = now - lastT || 16;
+                velocity = (-dy / dt) * 16; // px per frame
+                lastY = e.clientY;
+                lastT = now;
+                scrollBy(-dy);
+            });
+            function endDrag(e) {
+                if (!dragging) return;
+                dragging = false;
+                el.classList.remove("dragging");
+                if (e && e.pointerId !== undefined) {
+                    try {
+                        el.releasePointerCapture(e.pointerId);
+                    } catch (_) {}
+                }
+                const step = () => {
+                    velocity *= 0.94;
+                    if (Math.abs(velocity) < 0.2) return;
+                    const before = offset;
+                    scrollBy(velocity);
+                    if (offset === before) return; // hit the top
+                    inertia = requestAnimationFrame(step);
+                };
+                inertia = requestAnimationFrame(step);
+            }
+            el.addEventListener("pointerup", endDrag);
+            el.addEventListener("pointercancel", endDrag);
 
-// keyboard
-el.addEventListener('keydown', (e) => {
-  const page = el.clientHeight - ROW;
-  const map = { ArrowDown: ROW, ArrowUp: -ROW, PageDown: page, PageUp: -page, End: YEAR * ROW };
-  if (e.key === 'Home') { offset = 0; scheduleRender(); e.preventDefault(); return; }
-  if (map[e.key] !== undefined) { scrollBy(map[e.key]); e.preventDefault(); }
-});
+            // keyboard
+            el.addEventListener("keydown", (e) => {
+                const page = el.clientHeight - ROW;
+                const map = { ArrowDown: ROW, ArrowUp: -ROW, PageDown: page, PageUp: -page, End: YEAR * ROW };
+                if (e.key === "Home") {
+                    offset = 0;
+                    scheduleRender();
+                    e.preventDefault();
+                    return;
+                }
+                if (map[e.key] !== undefined) {
+                    scrollBy(map[e.key]);
+                    e.preventDefault();
+                }
+            });
 
-window.addEventListener('resize', () => { buildPool(); render(); });
+            window.addEventListener("resize", () => {
+                buildPool();
+                render();
+            });
 
-// ---- menu bar --------------------------------------------------------------
-const jumpForm = document.getElementById('jump-form');
-const jumpInput = document.getElementById('jump');
-const menuBtn = document.getElementById('menu-btn');
-const menu = document.getElementById('menu');
-const newMoonInput = document.getElementById('new-moon');
-const seasonStartInput = document.getElementById('season-start');
-const current = document.getElementById('current');
+            // ---- menu bar --------------------------------------------------------------
+            const jumpForm = document.getElementById("jump-form");
+            const jumpInput = document.getElementById("jump");
+            const menuBtn = document.getElementById("menu-btn");
+            const menu = document.getElementById("menu");
+            const newMoonInput = document.getElementById("new-moon");
+            const seasonStartInput = document.getElementById("season-start");
+            const current = document.getElementById("current");
 
-jumpForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const day = parseInt(jumpInput.value, 10);
-  if (!Number.isFinite(day)) return;
-  jumpInput.value = goToDay(day);
-  jumpInput.blur();
-});
+            jumpForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const day = parseInt(jumpInput.value, 10);
+                if (!Number.isFinite(day)) return;
+                jumpInput.value = goToDay(day);
+                jumpInput.blur();
+            });
 
-function setMenuOpen(open) {
-  menu.hidden = !open;
-  menuBtn.setAttribute('aria-expanded', String(open));
-}
-menuBtn.addEventListener('click', () => setMenuOpen(menu.hidden));
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && !menu.hidden) { setMenuOpen(false); menuBtn.focus(); }
-});
-document.addEventListener('pointerdown', (e) => {
-  if (menu.hidden) return;
-  if (!menu.contains(e.target) && e.target !== menuBtn) setMenuOpen(false);
-}, true);
+            function setMenuOpen(open) {
+                menu.hidden = !open;
+                menuBtn.setAttribute("aria-expanded", String(open));
+            }
+            menuBtn.addEventListener("click", () => setMenuOpen(menu.hidden));
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && !menu.hidden) {
+                    setMenuOpen(false);
+                    menuBtn.focus();
+                }
+            });
+            document.addEventListener(
+                "pointerdown",
+                (e) => {
+                    if (menu.hidden) return;
+                    if (!menu.contains(e.target) && e.target !== menuBtn) setMenuOpen(false);
+                },
+                true,
+            );
 
-function syncInputs() {
-  newMoonInput.value = cfg.newMoonDay;
-  seasonStartInput.value = cfg.seasonStart;
-  current.textContent = `moon shift +${mod(cfg.newMoonDay - 1, MOON_CYCLE.length)}d · ` +
-                        `season shift +${mod(cfg.seasonStart - 1, YEAR)}d`;
-}
-function applySetting(key, value) {
-  if (!Number.isFinite(value)) return;
-  cfg[key] = Math.round(value);
-  save();
-  syncInputs();
-  scheduleRender();
-}
-newMoonInput.addEventListener('input', () => applySetting('newMoonDay', parseInt(newMoonInput.value, 10)));
-seasonStartInput.addEventListener('input', () => applySetting('seasonStart', parseInt(seasonStartInput.value, 10)));
+            function syncInputs() {
+                newMoonInput.value = cfg.newMoonDay;
+                seasonStartInput.value = cfg.seasonStart;
+                current.textContent =
+                    `moon shift +${mod(cfg.newMoonDay - 1, MOON_CYCLE.length)}d · ` +
+                    `season shift +${mod(cfg.seasonStart - 1, YEAR)}d`;
+            }
+            function applySetting(key, value) {
+                if (!Number.isFinite(value)) return;
+                cfg[key] = Math.round(value);
+                save();
+                syncInputs();
+                scheduleRender();
+            }
+            newMoonInput.addEventListener("input", () => applySetting("newMoonDay", parseInt(newMoonInput.value, 10)));
+            seasonStartInput.addEventListener("input", () =>
+                applySetting("seasonStart", parseInt(seasonStartInput.value, 10)),
+            );
 
-menu.addEventListener('click', (e) => {
-  const btn = e.target.closest('[data-step]');
-  if (!btn) return;
-  const key = btn.dataset.step === 'new-moon' ? 'newMoonDay' : 'seasonStart';
-  applySetting(key, cfg[key] + Number(btn.dataset.delta));
-});
+            menu.addEventListener("click", (e) => {
+                const btn = e.target.closest("[data-step]");
+                if (!btn) return;
+                const key = btn.dataset.step === "new-moon" ? "newMoonDay" : "seasonStart";
+                applySetting(key, cfg[key] + Number(btn.dataset.delta));
+            });
 
-document.getElementById('reset').addEventListener('click', () => {
-  Object.assign(cfg, DEFAULTS);
-  save();
-  syncInputs();
-  scheduleRender();
-});
+            document.getElementById("reset").addEventListener("click", () => {
+                Object.assign(cfg, DEFAULTS);
+                save();
+                syncInputs();
+                scheduleRender();
+            });
 
-buildPool();
-syncInputs();
-render();
-el.focus();
-</script>
-</body>
+            buildPool();
+            syncInputs();
+            render();
+            el.focus();
+        </script>
+    </body>
 </html>
